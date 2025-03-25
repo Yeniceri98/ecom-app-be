@@ -1,5 +1,6 @@
 package org.application.ecomappbe.controller;
 
+import jakarta.validation.Valid;
 import org.application.ecomappbe.model.Category;
 import org.application.ecomappbe.service.CategoryServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -23,12 +24,12 @@ public class CategoryController {
     }
 
     @PostMapping("/admin/category")
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
         return new ResponseEntity<>(service.createCategory(category), HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<Category> updateCategory(@RequestBody Category category, @PathVariable Long categoryId) {
+    public ResponseEntity<Category> updateCategory(@Valid @RequestBody Category category, @PathVariable Long categoryId) {
         return new ResponseEntity<>(service.updateCategory(category, categoryId), HttpStatus.OK);
     }
 
