@@ -1,6 +1,6 @@
 package org.application.ecomappbe.service;
 
-import org.application.ecomappbe.exception.CategoryNotFoundException;
+import org.application.ecomappbe.exception.ResourceNotFoundException;
 import org.application.ecomappbe.model.Category;
 import org.application.ecomappbe.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategory(Category category, Long categoryId) {
-        Category existingCategory = repository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException("Category with ID " + categoryId + " is not found"));
+        Category existingCategory = repository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("Category with ID " + categoryId + " is not found")
+        );
 
         existingCategory.setCategoryName(category.getCategoryName());
 
@@ -36,7 +38,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Long categoryId) {
-        Category existingCategory = repository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException("Category with ID " + categoryId + " is not found"));
+        Category existingCategory = repository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("Category with ID " + categoryId + " is not found")
+        );
+
         repository.delete(existingCategory);
     }
 }
