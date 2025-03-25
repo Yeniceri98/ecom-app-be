@@ -1,5 +1,6 @@
 package org.application.ecomappbe.service;
 
+import org.application.ecomappbe.exception.ResourceAlreadyExistsException;
 import org.application.ecomappbe.exception.ResourceNotFoundException;
 import org.application.ecomappbe.model.Category;
 import org.application.ecomappbe.repository.CategoryRepository;
@@ -22,6 +23,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category createCategory(Category category) {
+        if (repository.existsByCategoryName(category.getCategoryName())) {
+            throw new ResourceAlreadyExistsException(category.getCategoryName() + " is already exists");
+        }
         return repository.save(category);
     }
 
