@@ -7,6 +7,9 @@ import org.application.ecomappbe.exception.ResourceNotFoundException;
 import org.application.ecomappbe.mapper.CategoryMapper;
 import org.application.ecomappbe.model.Category;
 import org.application.ecomappbe.repository.CategoryRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +25,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponseList getAllCategories() {
-        List<Category> categories = repository.findAll();
+    public CategoryResponseList getAllCategories(Integer pageNumber, Integer pageSize) {
+        // Pagination
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize);
+        Page<Category> categoryPage = repository.findAll(pageDetails);
+
+        // List<Category> categories = repository.findAll();
+        List<Category> categories = categoryPage.getContent();  // Pagination Update
         List<CategoryDto> categoryDtos = categoryMapper.mapToDtoList(categories);
+
         return new CategoryResponseList(categoryDtos);
     }
 

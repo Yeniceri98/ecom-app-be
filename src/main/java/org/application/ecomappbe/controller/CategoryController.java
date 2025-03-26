@@ -3,7 +3,6 @@ package org.application.ecomappbe.controller;
 import jakarta.validation.Valid;
 import org.application.ecomappbe.dto.CategoryDto;
 import org.application.ecomappbe.dto.CategoryResponseList;
-import org.application.ecomappbe.model.Category;
 import org.application.ecomappbe.service.CategoryServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +18,11 @@ public class CategoryController {
     }
 
     @GetMapping("/public/categories")
-    public ResponseEntity<CategoryResponseList> getAllCategories() {
-        return new ResponseEntity<>(service.getAllCategories(), HttpStatus.OK);
+    public ResponseEntity<CategoryResponseList> getAllCategories(
+            @RequestParam(name = "pageNumber") Integer pageNumber,  // name parameter can be defined explicitly (optional)
+            @RequestParam Integer pageSize
+    ) {
+        return new ResponseEntity<>(service.getAllCategories(pageNumber, pageSize), HttpStatus.OK);
     }
 
     @GetMapping("/public/categories/{categoryId}")
