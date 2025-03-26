@@ -34,7 +34,16 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> categories = categoryPage.getContent();  // Pagination Update
         List<CategoryDto> categoryDtos = categoryMapper.mapToDtoList(categories);
 
-        return new CategoryResponseList(categoryDtos);
+        // Set pagination fields
+        CategoryResponseList responseList = new CategoryResponseList();
+        responseList.setContent(categoryDtos);
+        responseList.setPageNumber(categoryPage.getNumber());
+        responseList.setPageSize(categoryPage.getSize());
+        responseList.setTotalElements(categoryPage.getTotalElements());
+        responseList.setTotalPages(categoryPage.getTotalPages());
+        responseList.setLastPage(categoryPage.isLast());
+
+        return responseList;
     }
 
     @Override
