@@ -1,12 +1,12 @@
 package org.application.ecomappbe.service;
 
-import org.application.ecomappbe.model.Category;
-
-import java.util.List;
+import org.application.ecomappbe.dto.CategoryDto;
+import org.application.ecomappbe.dto.CategoryResponseList;
 
 public interface CategoryService {
-    List<Category> getAllCategories();
-    Category createCategory(Category category);
-    Category updateCategory(Category category, Long categoryId);
+    CategoryResponseList getAllCategories();
+    CategoryDto getCategoryById(Long categoryId);
+    CategoryDto createCategory(CategoryDto categoryDto);
+    CategoryDto updateCategory(CategoryDto categoryDto, Long categoryId);
     void deleteCategory(Long categoryId);
 }

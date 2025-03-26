@@ -1,13 +1,13 @@
 package org.application.ecomappbe.controller;
 
 import jakarta.validation.Valid;
+import org.application.ecomappbe.dto.CategoryDto;
+import org.application.ecomappbe.dto.CategoryResponseList;
 import org.application.ecomappbe.model.Category;
 import org.application.ecomappbe.service.CategoryServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -19,18 +19,23 @@ public class CategoryController {
     }
 
     @GetMapping("/public/categories")
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<CategoryResponseList> getAllCategories() {
         return new ResponseEntity<>(service.getAllCategories(), HttpStatus.OK);
     }
 
+    @GetMapping("/public/categories/{categoryId}")
+    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long categoryId) {
+        return new ResponseEntity<>(service.getCategoryById(categoryId), HttpStatus.OK);
+    }
+
     @PostMapping("/admin/category")
-    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
-        return new ResponseEntity<>(service.createCategory(category), HttpStatus.CREATED);
+    public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
+        return new ResponseEntity<>(service.createCategory(categoryDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<Category> updateCategory(@Valid @RequestBody Category category, @PathVariable Long categoryId) {
-        return new ResponseEntity<>(service.updateCategory(category, categoryId), HttpStatus.OK);
+    public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto, @PathVariable Long categoryId) {
+        return new ResponseEntity<>(service.updateCategory(categoryDto, categoryId), HttpStatus.OK);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
