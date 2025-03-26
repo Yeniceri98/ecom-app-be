@@ -10,6 +10,7 @@ import org.application.ecomappbe.repository.CategoryRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,9 +26,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponseList getAllCategories(Integer pageNumber, Integer pageSize) {
+    public CategoryResponseList getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        // Sorting
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
         // Pagination
-        Pageable pageDetails = PageRequest.of(pageNumber, pageSize);
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
         Page<Category> categoryPage = repository.findAll(pageDetails);
 
         // List<Category> categories = repository.findAll();
