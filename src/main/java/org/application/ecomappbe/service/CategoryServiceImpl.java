@@ -17,11 +17,11 @@ import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    private final CategoryRepository repository;
+    private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    public CategoryServiceImpl(CategoryRepository repository, CategoryMapper categoryMapper) {
-        this.repository = repository;
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+        this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
     }
 
@@ -32,10 +32,10 @@ public class CategoryServiceImpl implements CategoryService {
 
         // Pagination
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
-        Page<Category> categoryPage = repository.findAll(pageDetails);
+        Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
 
-        // List<Category> categories = repository.findAll();
-        List<Category> categories = categoryPage.getContent();  // Pagination Update
+        // List<Category> categories = categoryRepository.findAll();
+        List<Category> categories = categoryPage.getContent();
         List<CategoryDto> categoryDtos = categoryMapper.mapToDtoList(categories);
 
         // Set pagination fields
@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto getCategoryById(Long categoryId) {
-        Category category = repository.findById(categoryId).orElseThrow(
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Category with ID " + categoryId + " is not found")
         );
         return categoryMapper.mapToDto(category);
@@ -60,34 +60,34 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {
-        if (repository.existsByCategoryName(categoryDto.getCategoryName())) {
+        if (categoryRepository.existsByCategoryName(categoryDto.getCategoryName())) {
             throw new ResourceAlreadyExistsException(categoryDto.getCategoryName() + " already exists");
         }
 
         Category category = categoryMapper.mapToEntity(categoryDto);    // DTO to Entity
-        Category savedCategory = repository.save(category);             // Save Entity
+        Category savedCategory = categoryRepository.save(category);             // Save Entity
 
         return categoryMapper.mapToDto(savedCategory);                  // Entity to DTO
     }
 
     @Override
     public CategoryDto updateCategory(CategoryDto categoryDto, Long categoryId) {
-        Category existingCategory = repository.findById(categoryId).orElseThrow(
+        Category existingCategory = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Category with ID " + categoryId + " is not found")
         );
 
         existingCategory.setCategoryName(categoryDto.getCategoryName());
-        Category updatedCategory = repository.save(existingCategory);
+        Category updatedCategory = categoryRepository.save(existingCategory);
 
         return categoryMapper.mapToDto(updatedCategory);
     }
 
     @Override
     public void deleteCategory(Long categoryId) {
-        Category existingCategory = repository.findById(categoryId).orElseThrow(
+        Category existingCategory = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Category with ID " + categoryId + " is not found")
         );
 
-        repository.delete(existingCategory);
+        categoryRepository.delete(existingCategory);
     }
 }
