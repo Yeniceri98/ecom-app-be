@@ -1,7 +1,7 @@
 package org.application.ecomappbe.service;
 
 import org.application.ecomappbe.dto.CategoryDto;
-import org.application.ecomappbe.dto.CategoryResponseList;
+import org.application.ecomappbe.dto.CategoryResponse;
 import org.application.ecomappbe.exception.ResourceAlreadyExistsException;
 import org.application.ecomappbe.exception.ResourceNotFoundException;
 import org.application.ecomappbe.mapper.CategoryMapper;
@@ -26,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponseList getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    public CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         // Sorting
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
         List<CategoryDto> categoryDtos = categoryMapper.mapToDtoList(categories);
 
         // Set pagination fields
-        CategoryResponseList responseList = new CategoryResponseList();
+        CategoryResponse responseList = new CategoryResponse();
         responseList.setContent(categoryDtos);
         responseList.setPageNumber(categoryPage.getNumber());
         responseList.setPageSize(categoryPage.getSize());

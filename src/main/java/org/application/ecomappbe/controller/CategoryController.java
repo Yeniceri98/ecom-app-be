@@ -3,7 +3,7 @@ package org.application.ecomappbe.controller;
 import jakarta.validation.Valid;
 import org.application.ecomappbe.config.AppConstants;
 import org.application.ecomappbe.dto.CategoryDto;
-import org.application.ecomappbe.dto.CategoryResponseList;
+import org.application.ecomappbe.dto.CategoryResponse;
 import org.application.ecomappbe.service.CategoryServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class CategoryController {
     }
 
     @GetMapping("/public/categories")
-    public ResponseEntity<CategoryResponseList> getAllCategories(
+    public ResponseEntity<CategoryResponse> getAllCategories(
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORIES_BY, required = false) String sortBy,

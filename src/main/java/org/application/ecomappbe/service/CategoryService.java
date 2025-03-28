@@ -1,10 +1,10 @@
 package org.application.ecomappbe.service;
 
 import org.application.ecomappbe.dto.CategoryDto;
-import org.application.ecomappbe.dto.CategoryResponseList;
+import org.application.ecomappbe.dto.CategoryResponse;
 
 public interface CategoryService {
-    CategoryResponseList getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+    CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
     CategoryDto getCategoryById(Long categoryId);
     CategoryDto createCategory(CategoryDto categoryDto);
     CategoryDto updateCategory(CategoryDto categoryDto, Long categoryId);
