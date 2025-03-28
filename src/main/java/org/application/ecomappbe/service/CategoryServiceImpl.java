@@ -65,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         Category category = categoryMapper.mapToEntity(categoryDto);    // DTO to Entity
-        Category savedCategory = categoryRepository.save(category);             // Save Entity
+        Category savedCategory = categoryRepository.save(category);     // Save Entity
 
         return categoryMapper.mapToDto(savedCategory);                  // Entity to DTO
     }
