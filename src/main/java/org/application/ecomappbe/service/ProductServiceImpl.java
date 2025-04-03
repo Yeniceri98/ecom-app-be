@@ -9,8 +9,14 @@ import org.application.ecomappbe.model.Product;
 import org.application.ecomappbe.repository.CategoryRepository;
 import org.application.ecomappbe.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -92,6 +98,52 @@ public class ProductServiceImpl implements ProductService {
 
         // Converting to DTO
         return productMapper.mapToDto(updatedProduct);
+    }
+
+    @Override
+    public ProductDto updateProductImage(Long productId, MultipartFile image) throws IOException {
+        Product existingProduct = productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product with ID " + productId + " is not found")
+        );
+
+        try {
+            // Uploading image & getting the file name of uploaded image
+            String path = "images/";
+            String fileName = uploadImage(path, image);
+
+            // Updating new file name to product
+            existingProduct.setImage(fileName);
+
+            // Saving updated product
+            Product updatedProduct = productRepository.save(existingProduct);
+
+            // Converting to DTO
+            return productMapper.mapToDto(updatedProduct);
+        } catch (IOException e) {
+            throw new IOException("Failed to upload image for product with ID " + productId, e);
+        }
+    }
+
+    private String uploadImage(String path, MultipartFile file) throws IOException {
+        // Original File
+        String originalFileName = file.getOriginalFilename();
+
+        // Generating Unique File Name
+        String randomId = UUID.randomUUID().toString();
+        String fileName = randomId.concat(originalFileName.substring(originalFileName.lastIndexOf(".")));   // EX: originalFileName: example.jpg / randomId: 123 ---> 123.jpg (fileName at the end after the process)
+        String filePath = path + File.separator + fileName;
+
+        // Check if directory exists and create if it doesn't
+        File folder = new File(path);
+
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+
+        // Uploading to the server
+        Files.copy(file.getInputStream(), Paths.get(filePath));
+
+        return fileName;
     }
 
     @Override
