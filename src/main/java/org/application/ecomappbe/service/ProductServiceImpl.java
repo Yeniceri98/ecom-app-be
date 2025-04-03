@@ -2,6 +2,7 @@ package org.application.ecomappbe.service;
 
 import org.application.ecomappbe.dto.ProductDto;
 import org.application.ecomappbe.dto.ProductResponse;
+import org.application.ecomappbe.exception.ResourceAlreadyExistsException;
 import org.application.ecomappbe.exception.ResourceNotFoundException;
 import org.application.ecomappbe.mapper.ProductMapper;
 import org.application.ecomappbe.model.Category;
@@ -65,20 +66,34 @@ public class ProductServiceImpl implements ProductService {
                 () -> new ResourceNotFoundException("Category with ID " + categoryId + " is not found")
         );
 
+        boolean isProductNotPresent = true;
+        List<Product> productList = category.getProducts();
+
+        for (Product product : productList) {
+            if (product.getProductName().equals(productDto.getProductName())) {
+                isProductNotPresent = false;
+                break;
+            }
+        }
+
         // Converting DTO to Entity
         Product product = productMapper.mapToEntity(productDto);
 
-        // Setting the Fields (These won't be in the request since we declare and set them in here)
-        product.setImage("default.png");
-        double specialPrice = product.getPrice() - (product.getDiscount() * 0.01) * product.getPrice();
-        product.setSpecialPrice(specialPrice);
-        product.setCategory(category);
+        if (isProductNotPresent) {
+            // Setting the Fields (These won't be in the request since we declare and set them in here)
+            product.setImage("default.png");
+            double specialPrice = product.getPrice() - (product.getDiscount() * 0.01) * product.getPrice();
+            product.setSpecialPrice(specialPrice);
+            product.setCategory(category);
 
-        // Saving the Product
-        Product savedProduct = productRepository.save(product);
+            // Saving the Product
+            Product savedProduct = productRepository.save(product);
 
-        // Converting back to DTO
-        return productMapper.mapToDto(savedProduct);
+            // Converting back to DTO
+            return productMapper.mapToDto(savedProduct);
+        } else {
+            throw new ResourceAlreadyExistsException("Product is already exists!");
+        }
     }
 
     @Override
