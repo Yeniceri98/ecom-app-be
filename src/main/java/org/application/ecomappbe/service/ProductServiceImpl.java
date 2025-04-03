@@ -46,36 +46,31 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
         Page<Product> productPage = productRepository.findAll(pageable);
 
-        List<Product> products = productPage.getContent();
-        List<ProductDto> productDtos = productMapper.mapToDtoList(products);
-
-        ProductResponse productResponse = new ProductResponse();
-        productResponse.setContent(productDtos);
-        productResponse.setPageNumber(productPage.getNumber());
-        productResponse.setPageSize(productPage.getSize());
-        productResponse.setTotalElements(productPage.getTotalElements());
-        productResponse.setTotalPages(productPage.getTotalPages());
-        productResponse.setLastPage(productPage.isLast());
-
-        return productResponse;
+        return getProductResponse(productPage);
     }
 
     @Override
-    public ProductResponse getProductsByCategory(Long categoryId) {
+    public ProductResponse getProductsByCategory(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Category with ID " + categoryId + " is not found")
         );
 
-        List<Product> productList = productRepository.findByCategoryOrderByPriceAsc(category);  // Custom Query Method
-        List<ProductDto> productDtoList = productMapper.mapToDtoList(productList);
-        return new ProductResponse(productDtoList);
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Product> productPage = productRepository.findByCategoryOrderByPriceAsc(category, pageable);
+
+        return getProductResponse(productPage);
     }
 
     @Override
-    public ProductResponse getProductsByKeyword(String keyword) {
-        List<Product> productList = productRepository.findByProductNameContainingIgnoreCase(keyword);
-        List<ProductDto> productDtoList = productMapper.mapToDtoList(productList);
-        return new ProductResponse(productDtoList);
+    public ProductResponse getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+
+        Page<Product> productPage = productRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
+        return getProductResponse(productPage);
     }
 
     @Override
@@ -160,6 +155,31 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product with ID " + productId + " is not found")
+        );
+
+        productRepository.delete(product);
+    }
+
+    // Helper Methods
+    private ProductResponse getProductResponse(Page<Product> productPage) {
+        List<Product> products = productPage.getContent();
+        List<ProductDto> productDtos = productMapper.mapToDtoList(products);
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setContent(productDtos);
+        productResponse.setPageNumber(productPage.getNumber());
+        productResponse.setPageSize(productPage.getSize());
+        productResponse.setTotalElements(productPage.getTotalElements());
+        productResponse.setTotalPages(productPage.getTotalPages());
+        productResponse.setLastPage(productPage.isLast());
+
+        return productResponse;
+    }
+
     private String uploadImage(String path, MultipartFile file) throws IOException {
         // Original File
         String originalFileName = file.getOriginalFilename();
@@ -180,14 +200,5 @@ public class ProductServiceImpl implements ProductService {
         Files.copy(file.getInputStream(), Paths.get(filePath));
 
         return fileName;
-    }
-
-    @Override
-    public void deleteProduct(Long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(
-                () -> new ResourceNotFoundException("Product with ID " + productId + " is not found")
-        );
-
-        productRepository.delete(product);
     }
 }

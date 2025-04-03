@@ -17,9 +17,4 @@ public class ProductResponse {
     private Long totalElements;
     private Integer totalPages;
     private boolean lastPage;
-
-    // Constructor for content field in order to be used in some methods in Service class
-    public ProductResponse(List<ProductDto> content) {
-        this.content = content;
-    }
 }
