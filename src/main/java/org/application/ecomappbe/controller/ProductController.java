@@ -1,5 +1,6 @@
 package org.application.ecomappbe.controller;
 
+import org.application.ecomappbe.config.AppConstants;
 import org.application.ecomappbe.dto.ProductDto;
 import org.application.ecomappbe.dto.ProductResponse;
 import org.application.ecomappbe.service.ProductService;
@@ -20,8 +21,13 @@ public class ProductController {
     }
 
     @GetMapping("/public/products")
-    public ResponseEntity<ProductResponse> getAllProducts() {
-        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+    public ResponseEntity<ProductResponse> getAllProducts(
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCTS_BY, required = false) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIRECTION_BY, required = false) String sortOrder
+    ) {
+        return new ResponseEntity<>(productService.getAllProducts(pageNumber, pageSize, sortBy, sortOrder), HttpStatus.OK);
     }
 
     @GetMapping("/public/categories/{categoryId}/products")

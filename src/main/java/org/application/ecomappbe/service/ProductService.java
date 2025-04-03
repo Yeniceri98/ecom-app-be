@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface ProductService {
-    ProductResponse getAllProducts();
+    ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
     ProductResponse getProductsByCategory(Long categoryId);
     ProductResponse getProductsByKeyword(String keyword);
     ProductDto addProduct(ProductDto productDto, Long categoryId);

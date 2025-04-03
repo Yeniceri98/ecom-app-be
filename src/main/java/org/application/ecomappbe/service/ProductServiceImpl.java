@@ -10,6 +10,10 @@ import org.application.ecomappbe.model.Product;
 import org.application.ecomappbe.repository.CategoryRepository;
 import org.application.ecomappbe.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,10 +40,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getAllProducts() {
-        List<Product> productList = productRepository.findAll();
-        List<ProductDto> productDtoList = productMapper.mapToDtoList(productList);
-        return new ProductResponse(productDtoList);
+    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Product> productPage = productRepository.findAll(pageable);
+
+        List<Product> products = productPage.getContent();
+        List<ProductDto> productDtos = productMapper.mapToDtoList(products);
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setContent(productDtos);
+        productResponse.setPageNumber(productPage.getNumber());
+        productResponse.setPageSize(productPage.getSize());
+        productResponse.setTotalElements(productPage.getTotalElements());
+        productResponse.setTotalPages(productPage.getTotalPages());
+        productResponse.setLastPage(productPage.isLast());
+
+        return productResponse;
     }
 
     @Override
