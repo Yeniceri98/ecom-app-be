@@ -8,6 +8,7 @@ import org.application.ecomappbe.model.Category;
 import org.application.ecomappbe.model.Product;
 import org.application.ecomappbe.repository.CategoryRepository;
 import org.application.ecomappbe.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,9 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+
+    @Value("${project.image}")
+    private String path;
 
     public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
@@ -108,7 +112,6 @@ public class ProductServiceImpl implements ProductService {
 
         try {
             // Uploading image & getting the file name of uploaded image
-            String path = "images/";
             String fileName = uploadImage(path, image);
 
             // Updating new file name to product
