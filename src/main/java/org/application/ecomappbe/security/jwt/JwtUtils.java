@@ -1,7 +1,9 @@
 package org.application.ecomappbe.security.jwt;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -30,13 +33,13 @@ public class JwtUtils {
     public String generateToken(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
-                .map(grantedAuthority -> grantedAuthority.getAuthority()).toList();
+                .map(GrantedAuthority::getAuthority).toList();
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claim("roles", roles)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
-                .signWith(signingKey(), SignatureAlgorithm.HS256)
+                .signWith(signingKey())
                 .compact();
     }
 
@@ -56,8 +59,6 @@ public class JwtUtils {
                     .build()
                     .parseSignedClaims(authToken);
             return true;
-        } catch (SignatureException e) {
-            logger.error("Invalid JWT signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
