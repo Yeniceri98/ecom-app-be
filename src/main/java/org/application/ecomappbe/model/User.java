@@ -51,7 +51,7 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private Set<Product> products;
+    private Set<Product> products = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -60,4 +60,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "address_id")
     )
     private List<Address> addresses = new ArrayList<>();
+
+    public User(String username, String email, String password, Set<Role> roles) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
 }
