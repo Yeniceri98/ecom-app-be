@@ -31,6 +31,9 @@ public class DemoUserInitializer implements CommandLineRunner {
         Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
                 .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_USER)));
 
+        Role sellerRole = roleRepository.findByRoleName(AppRole.ROLE_SELLER)
+                .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_SELLER)));
+
         // Check if users exist, create if they don't
         if (userRepository.findByUsername("admin").isEmpty()) {
             User adminUser = new User("admin", "admin@example.com", passwordEncoder.encode("a123"), new HashSet<>(Set.of(adminRole)));
@@ -40,6 +43,11 @@ public class DemoUserInitializer implements CommandLineRunner {
         if (userRepository.findByUsername("user").isEmpty()) {
             User user = new User("user", "user@example.com", passwordEncoder.encode("u123"), new HashSet<>(Set.of(userRole)));
             userRepository.save(user);
+        }
+
+        if (userRepository.findByUsername("seller").isEmpty()) {
+            User seller = new User("seller", "seller@example.com", passwordEncoder.encode("s123"), new HashSet<>(Set.of(sellerRole)));
+            userRepository.save(seller);
         }
     }
 }
