@@ -34,4 +34,10 @@ public class GlobalExceptionHandler {
         ErrorObject errorObject = new ErrorObject(ex.getMessage(), request.getDescription(false), LocalDateTime.now());
         return new ResponseEntity<>(errorObject, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorObject> handleUserAlreadyExistsException(UserAlreadyExistsException ex, WebRequest request) {
+        ErrorObject errorObject = new ErrorObject(ex.getMessage(), request.getDescription(false), LocalDateTime.now());
+        return new ResponseEntity<>(errorObject, HttpStatus.BAD_REQUEST);
+    }
 }

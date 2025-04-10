@@ -4,8 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.application.ecomappbe.dto.LoginRequest;
 import org.application.ecomappbe.dto.LoginResponse;
+import org.application.ecomappbe.dto.RegisterRequest;
 import org.application.ecomappbe.security.jwt.JwtUtils;
 import org.application.ecomappbe.security.user.EcomUserDetails;
+import org.application.ecomappbe.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +28,13 @@ import java.util.List;
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final UserService userService;
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) {
+        userService.register(registerRequest);
+        return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
