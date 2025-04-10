@@ -39,7 +39,7 @@ public class User {
     private String email;
 
     @NotBlank
-    @Size(max = 25)
+    @Size(max = 100)
     private String password;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)

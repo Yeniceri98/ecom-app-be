@@ -7,6 +7,7 @@ import org.application.ecomappbe.model.User;
 import org.application.ecomappbe.repository.RoleRepository;
 import org.application.ecomappbe.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.Set;
 public class DemoUserInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -31,12 +33,12 @@ public class DemoUserInitializer implements CommandLineRunner {
 
         // Check if users exist, create if they don't
         if (userRepository.findByUsername("admin").isEmpty()) {
-            User adminUser = new User("admin", "admin@example.com", "a123", new HashSet<>(Set.of(adminRole)));
+            User adminUser = new User("admin", "admin@example.com", passwordEncoder.encode("a123"), new HashSet<>(Set.of(adminRole)));
             userRepository.save(adminUser);
         }
 
         if (userRepository.findByUsername("user").isEmpty()) {
-            User user = new User("user", "user@example.com", "u123", new HashSet<>(Set.of(userRole)));
+            User user = new User("user", "user@example.com", passwordEncoder.encode("u123"), new HashSet<>(Set.of(userRole)));
             userRepository.save(user);
         }
     }
