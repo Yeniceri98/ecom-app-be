@@ -18,16 +18,19 @@ import java.util.stream.Collectors;
 public class EcomUserDetails implements UserDetails {
     private Long id;
     private String username;
+    private String email;
     private String password;
     private List<GrantedAuthority> authorities;
 
+    // Returning User object as UserDetails object
     public static EcomUserDetails build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))  // Convert enum to String
+                .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))  // Convert Enum to String with name()
                 .collect(Collectors.toList());
         return new EcomUserDetails(
                 user.getUserId(),
                 user.getUsername(),
+                user.getEmail(),
                 user.getPassword(),
                 authorities
         );
