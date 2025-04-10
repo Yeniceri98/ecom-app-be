@@ -42,6 +42,6 @@ public class AuthController {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        return ResponseEntity.ok(new LoginResponse(userDetails.getUsername(), jwtToken, roles));
+        return ResponseEntity.ok(new LoginResponse(userDetails.getId(), userDetails.getUsername(), jwtToken, roles));
     }
 }
