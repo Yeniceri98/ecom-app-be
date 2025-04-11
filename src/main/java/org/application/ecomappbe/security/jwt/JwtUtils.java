@@ -6,15 +6,18 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.application.ecomappbe.security.user.EcomUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -31,7 +34,10 @@ public class JwtUtils {
     @Value("${jwt.expirationTimeMs}")
     private int expirationTimeMs;
 
-    // Token Based Authentication
+    @Value("{jwt.cookie")
+    private String jwtCookie;
+
+    // Token Based Authentication - Get JWT from Header
     public String getJwtFromHeader(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
 
@@ -42,6 +48,7 @@ public class JwtUtils {
         return null;
     }
 
+    // Token Based Authentication - Generate JWT Token
     public String generateJwtToken(Authentication authentication) {
         EcomUserDetails userDetails = (EcomUserDetails) authentication.getPrincipal();
 
@@ -53,6 +60,38 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claim("roles", roles)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
+                .signWith(signingKey())
+                .compact();
+    }
+
+    // Cookie Based Authentication - Get JWT from Cookies
+    public String getJwtFromCookies(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtCookie);
+
+        if (cookie != null) {
+            return cookie.getValue();
+        }
+
+        return null;
+    }
+
+    // Cookie Based Authentication - Generate JWT Cookie
+    public ResponseCookie generateJwtCookie(EcomUserDetails userPrincipal) {
+        String jwt = generateTokenFromUsername(userPrincipal.getUsername());
+
+        return ResponseCookie.from(jwtCookie, jwt)
+                .path("/api")
+                .maxAge(24 * 60 * 60)
+                .httpOnly(false)    // XSS Protection
+                .sameSite("Lax")    // CSRF Protection
+                .build();
+    }
+
+    public String generateTokenFromUsername(String username) {
+        return Jwts.builder()
+                .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
                 .signWith(signingKey())

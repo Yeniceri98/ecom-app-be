@@ -30,7 +30,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {   // A filter that is 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String jwt = jwtUtils.getJwtFromHeader(request);
+            // String jwt = jwtUtils.getJwtFromHeader(request);
+
+            String jwt = jwtUtils.getJwtFromCookies(request);   // Changed from Token Based to Cookie Based
 
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUsernameFromJwtToken(jwt);

@@ -8,7 +8,9 @@ import org.application.ecomappbe.dto.RegisterRequest;
 import org.application.ecomappbe.security.jwt.JwtUtils;
 import org.application.ecomappbe.security.user.EcomUserDetails;
 import org.application.ecomappbe.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,15 +45,20 @@ public class AuthController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwtToken = jwtUtils.generateJwtToken(authentication);
+        // String jwtToken = jwtUtils.generateJwtToken(authentication);     // Token Based
 
-        EcomUserDetails userDetails = (EcomUserDetails) authentication.getPrincipal();
+        EcomUserDetails ecomUserDetails = (EcomUserDetails) authentication.getPrincipal();
 
-        List<String> roles = userDetails.getAuthorities()
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(ecomUserDetails);     // Cookie Based
+
+        List<String> roles = ecomUserDetails.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        return ResponseEntity.ok(new LoginResponse(userDetails.getId(), userDetails.getUsername(), jwtToken, roles));
+        // return ResponseEntity.ok(new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), jwtToken, roles));
+
+        LoginResponse loginResponse = new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), jwtCookie.toString(), roles);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(loginResponse);
     }
 }
