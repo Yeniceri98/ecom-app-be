@@ -17,10 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -58,7 +55,25 @@ public class AuthController {
 
         // return ResponseEntity.ok(new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), jwtToken, roles));
 
-        LoginResponse loginResponse = new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), jwtCookie.toString(), roles);
+        LoginResponse loginResponse = new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), roles);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(loginResponse);
+    }
+
+    @GetMapping("/username")
+    public String retrieveCurrentUsername(Authentication authentication) {
+        return authentication != null ? authentication.getName() : "";
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<LoginResponse> retrieveCurrentUserDetails(Authentication authentication) {
+        EcomUserDetails ecomUserDetails = (EcomUserDetails) authentication.getPrincipal();
+
+        List<String> roles = ecomUserDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        LoginResponse response = new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), roles);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
