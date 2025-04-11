@@ -6,6 +6,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.application.ecomappbe.security.user.EcomUserDetails;
 import org.slf4j.Logger;
@@ -29,6 +30,17 @@ public class JwtUtils {
 
     @Value("${jwt.expirationTimeMs}")
     private int expirationTimeMs;
+
+    // Token Based Authentication
+    public String getJwtFromHeader(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+
+        if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7);     // EX: Bearer 12301231231231230913
+        }
+
+        return null;
+    }
 
     public String generateToken(Authentication authentication) {
         EcomUserDetails userDetails = (EcomUserDetails) authentication.getPrincipal();
