@@ -82,10 +82,11 @@ public class JwtUtils {
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
 
         return ResponseCookie.from(jwtCookie, jwt)
-                .path("/api")
+                .path("/api")       // Cookie will send the URLs that only start with "/api"
                 .maxAge(24 * 60 * 60)
-                .httpOnly(false)    // XSS Protection
+                .httpOnly(true)     // XSS Protection (If set true, JavaScript cannot access the cookie)
                 .sameSite("Lax")    // CSRF Protection
+                .secure(false)      // NOTE: It has to be "true" in production
                 .build();
     }
 
@@ -96,6 +97,18 @@ public class JwtUtils {
                 .expiration(new Date(System.currentTimeMillis() + expirationTimeMs))
                 .signWith(signingKey())
                 .compact();
+    }
+
+    // For Logout
+    // NOTE: Parameters like "path", "sameSite", "httpOnly" and "secure" should be set in the same way as in the generateJwtCookie() method
+    public ResponseCookie getCleanJwtCookie() {
+        return ResponseCookie.from("jwt", "")
+                .path("/api")
+                .maxAge(0)
+                .httpOnly(true)
+                .sameSite("Lax")
+                .secure(false)
+                .build();
     }
 
     public String getUsernameFromJwtToken(String token) {

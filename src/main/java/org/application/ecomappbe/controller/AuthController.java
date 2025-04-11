@@ -42,7 +42,7 @@ public class AuthController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // String jwtToken = jwtUtils.generateJwtToken(authentication);     // Token Based
+        // String jwtToken = jwtUtils.generateJwtToken(authentication);             // Token Based
 
         EcomUserDetails ecomUserDetails = (EcomUserDetails) authentication.getPrincipal();
 
@@ -57,6 +57,14 @@ public class AuthController {
 
         LoginResponse loginResponse = new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), roles);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(loginResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        ResponseCookie cleanCookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cleanCookie.toString())
+                .body("You have been logged out successfully!");
     }
 
     @GetMapping("/username")
