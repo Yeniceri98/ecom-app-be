@@ -14,11 +14,4 @@ public class LoginResponse {
     private String username;
     private String token;
     private List<String> roles;
-
-    // New constructor created because we don't need token in Cookie Based Authentication
-    public LoginResponse(Long userId, String username, List<String> roles) {
-        this.userId = userId;
-        this.username = username;
-        this.roles = roles;
-    }
 }

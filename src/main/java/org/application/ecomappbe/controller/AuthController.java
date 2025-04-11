@@ -58,7 +58,7 @@ public class AuthController {
 
         // return ResponseEntity.ok(new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), jwtToken, roles));
 
-        LoginResponse loginResponse = new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), roles);
+        LoginResponse loginResponse = new LoginResponse(ecomUserDetails.getId(), ecomUserDetails.getUsername(), jwtCookie.toString(), roles);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(loginResponse);
     }
 }
