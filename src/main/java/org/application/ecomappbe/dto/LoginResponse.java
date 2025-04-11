@@ -15,7 +15,7 @@ public class LoginResponse {
     private String token;
     private List<String> roles;
 
-    // New constructor without token field for Token Based Authentication since we don't need token info
+    // New constructor without token field for Cookie Based Authentication since we don't need token info
     public LoginResponse(Long userId, String username, List<String> roles) {
         this.userId = userId;
         this.username = username;
