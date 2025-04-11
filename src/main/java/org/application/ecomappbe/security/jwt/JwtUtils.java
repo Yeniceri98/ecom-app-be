@@ -34,7 +34,7 @@ public class JwtUtils {
     @Value("${jwt.expirationTimeMs}")
     private int expirationTimeMs;
 
-    @Value("{jwt.cookie")
+    @Value("{jwt.cookie}")
     private String jwtCookie;
 
     // Token Based Authentication - Get JWT from Header
