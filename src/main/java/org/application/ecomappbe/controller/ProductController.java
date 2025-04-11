@@ -6,6 +6,7 @@ import org.application.ecomappbe.dto.ProductResponse;
 import org.application.ecomappbe.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,16 +53,19 @@ public class ProductController {
         return new ResponseEntity<>(productService.getProductsByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/categories/{categoryId}/product")
     public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto, @PathVariable Long categoryId) {
         return new ResponseEntity<>(productService.addProduct(productDto, categoryId), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/products/{productId}")
     public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto, @PathVariable Long productId) {
         return new ResponseEntity<>(productService.updateProduct(productDto, productId), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/products/{productId}/image")
     public ResponseEntity<ProductDto> updateProductImage(
             @PathVariable Long productId, @RequestParam("image") MultipartFile image
@@ -69,6 +73,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.updateProductImage(productId, image), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/products/{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
