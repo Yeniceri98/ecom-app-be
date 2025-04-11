@@ -28,7 +28,7 @@ public class JwtUtils {
     private String secret;
 
     @Value("${jwt.expirationTimeMs}")
-    private int expirationTimeMs = 86400000;
+    private int expirationTimeMs;
 
     public String generateToken(Authentication authentication) {
         EcomUserDetails userDetails = (EcomUserDetails) authentication.getPrincipal();
