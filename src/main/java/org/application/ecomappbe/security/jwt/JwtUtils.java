@@ -42,7 +42,7 @@ public class JwtUtils {
         return null;
     }
 
-    public String generateToken(Authentication authentication) {
+    public String generateJwtToken(Authentication authentication) {
         EcomUserDetails userDetails = (EcomUserDetails) authentication.getPrincipal();
 
         List<String> roles = userDetails.getAuthorities()

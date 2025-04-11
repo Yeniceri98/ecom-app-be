@@ -43,7 +43,7 @@ public class AuthController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwtToken = jwtUtils.generateToken(authentication);
+        String jwtToken = jwtUtils.generateJwtToken(authentication);
 
         EcomUserDetails userDetails = (EcomUserDetails) authentication.getPrincipal();
 
