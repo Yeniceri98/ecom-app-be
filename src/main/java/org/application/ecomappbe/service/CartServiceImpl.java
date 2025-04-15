@@ -76,19 +76,7 @@ public class CartServiceImpl implements CartService {
         cart.setTotalPrice(cart.getTotalPrice() + (product.getSpecialPrice() * quantity));
         cartRepository.save(cart);
 
-        // Map Cart to DTO and Prepare Response
-        CartDto cartDto = cartMapper.mapToDto(cart);
-
-        List<CartItem> cartItems = cart.getCartItems();
-
-        List<ProductDto> productDtos = cartItems.stream().map(item -> {
-            ProductDto productDto = productMapper.mapToDto(item.getProduct());
-            productDto.setQuantity(item.getQuantity());
-            return productDto;
-        }).collect(Collectors.toList());
-
-        cartDto.setProducts(productDtos);
-        return cartDto;
+        return buildCartDtoWithProducts(cart);
     }
 
     @Override
@@ -99,20 +87,9 @@ public class CartServiceImpl implements CartService {
             throw new APIException("No cart exists");
         }
 
-        return carts.stream().map(cart -> {
-            CartDto cartDto = cartMapper.mapToDto(cart);
-
-            List<CartItem> cartItems = cart.getCartItems();
-
-            List<ProductDto> productDtos = cartItems.stream().map(cartItem -> {
-                ProductDto productDto = productMapper.mapToDto(cartItem.getProduct());
-                productDto.setQuantity(cartItem.getQuantity());
-                return productDto;
-            }).collect(Collectors.toList());
-
-            cartDto.setProducts(productDtos);
-            return cartDto;
-        }).collect(Collectors.toList());
+        return carts.stream()
+                .map(this::buildCartDtoWithProducts)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -131,16 +108,21 @@ public class CartServiceImpl implements CartService {
             throw new APIException("Cart not found with the provided email and cart ID");
         }
 
-        CartDto cartDto = cartMapper.mapToDto(findCartByEmailAndId);
-        
+        return buildCartDtoWithProducts(findCartByEmailAndId);
+    }
+
+    // Helper Methods
+    private CartDto buildCartDtoWithProducts(Cart cart) {
+        CartDto cartDto = cartMapper.mapToDto(cart);
+
         List<CartItem> cartItems = cart.getCartItems();
-        
+
         List<ProductDto> productDtos = cartItems.stream().map(cartItem -> {
             ProductDto productDto = productMapper.mapToDto(cartItem.getProduct());
             productDto.setQuantity(cartItem.getQuantity());
             return productDto;
         }).collect(Collectors.toList());
-        
+
         cartDto.setProducts(productDtos);
         return cartDto;
     }
