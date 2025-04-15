@@ -16,6 +16,8 @@ import org.application.ecomappbe.util.AuthUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -81,15 +83,38 @@ public class CartServiceImpl implements CartService {
 
         List<CartItem> cartItems = cart.getCartItems();
 
-        Stream<ProductDto> productDtoStream = cartItems.stream().map(item -> {
+        List<ProductDto> productDtos = cartItems.stream().map(item -> {
             ProductDto productDto = productMapper.mapToDto(item.getProduct());
             productDto.setQuantity(item.getQuantity());
             return productDto;
-        });
+        }).collect(Collectors.toList());
 
-        cartDto.setProducts(productDtoStream.toList());
-
+        cartDto.setProducts(productDtos);
         return cartDto;
+    }
+
+    @Override
+    public List<CartDto> getAllCarts() {
+        List<Cart> carts = cartRepository.findAll();
+
+        if (carts.isEmpty()) {
+            throw new APIException("No cart exists");
+        }
+
+        return carts.stream().map(cart -> {
+            CartDto cartDto = cartMapper.mapToDto(cart);
+
+            List<CartItem> cartItems = cart.getCartItems();
+
+            List<ProductDto> productDtos = cartItems.stream().map(cartItem -> {
+                ProductDto productDto = productMapper.mapToDto(cartItem.getProduct());
+                productDto.setQuantity(cartItem.getQuantity());
+                return productDto;
+            }).collect(Collectors.toList());
+
+            cartDto.setProducts(productDtos);
+            return cartDto;
+        }).collect(Collectors.toList());
     }
 
     private Cart createCart() {
