@@ -16,9 +16,7 @@ import org.application.ecomappbe.util.AuthUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -115,6 +113,36 @@ public class CartServiceImpl implements CartService {
             cartDto.setProducts(productDtos);
             return cartDto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public CartDto getCartOfUser() {
+        String email = authUtil.loggedInEmail();
+        Cart cart = cartRepository.findCartByEmail(email);
+
+        if (cart == null) {
+            throw new APIException("Cart not found for related user");
+        }
+
+        Long cartId = cart.getCartId();
+        Cart findCartByEmailAndId = cartRepository.findCartByEmailAndId(email, cartId);
+
+        if (findCartByEmailAndId == null) {
+            throw new APIException("Cart not found with the provided email and cart ID");
+        }
+
+        CartDto cartDto = cartMapper.mapToDto(findCartByEmailAndId);
+        
+        List<CartItem> cartItems = cart.getCartItems();
+        
+        List<ProductDto> productDtos = cartItems.stream().map(cartItem -> {
+            ProductDto productDto = productMapper.mapToDto(cartItem.getProduct());
+            productDto.setQuantity(cartItem.getQuantity());
+            return productDto;
+        }).collect(Collectors.toList());
+        
+        cartDto.setProducts(productDtos);
+        return cartDto;
     }
 
     private Cart createCart() {
