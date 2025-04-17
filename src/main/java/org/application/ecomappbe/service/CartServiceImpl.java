@@ -174,8 +174,8 @@ public class CartServiceImpl implements CartService {
                 () -> new ResourceNotFoundException("Cart not found with ID: " + cartId)
         );
 
-        CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(productId, cartId).orElseThrow(
-                () -> new ResourceNotFoundException("Cart item not found with product ID: " + productId + " and cart ID: " + cartId)
+        CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(cartId, productId).orElseThrow(
+                () -> new ResourceNotFoundException("Cart item with cart ID: " + cartId + " and product ID: " + productId + " not found")
         );
 
         Product product = cartItem.getProduct();
@@ -186,7 +186,7 @@ public class CartServiceImpl implements CartService {
         cart.setTotalPrice(cart.getTotalPrice() - (cartItem.getProductPrice() * cartItem.getQuantity()));
         cartRepository.save(cart);
 
-        cartItemRepository.deleteCartItemByProductIdAndCartId(productId, cartId);
+        cartItemRepository.deleteCartItemByProductIdAndCartId(cartId, productId);
     }
 
     // Helper Methods
