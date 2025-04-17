@@ -53,6 +53,11 @@ public class ProductController {
         return new ResponseEntity<>(productService.getProductsByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder), HttpStatus.OK);
     }
 
+    @GetMapping("/public/products/{productId}")
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long productId) {
+        return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/categories/{categoryId}/product")
     public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto, @PathVariable Long categoryId) {

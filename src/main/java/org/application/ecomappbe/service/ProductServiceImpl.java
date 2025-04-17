@@ -74,6 +74,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDto getProductById(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product with ID " + productId + " is not found")
+        );
+
+        return productMapper.mapToDto(product);
+    }
+
+    @Override
     public ProductDto addProduct(ProductDto productDto, Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Category with ID " + categoryId + " is not found")

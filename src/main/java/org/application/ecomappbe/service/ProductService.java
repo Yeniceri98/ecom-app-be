@@ -10,6 +10,7 @@ public interface ProductService {
     ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
     ProductResponse getProductsByCategory(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
     ProductResponse getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
+    ProductDto getProductById(Long productId);
     ProductDto addProduct(ProductDto productDto, Long categoryId);
     ProductDto updateProduct(ProductDto productDto, Long productId);
     ProductDto updateProductImage(Long productId, MultipartFile image) throws IOException;
