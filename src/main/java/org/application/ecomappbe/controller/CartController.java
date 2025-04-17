@@ -31,4 +31,15 @@ public class CartController {
     public ResponseEntity<CartDto> getCartOfUser() {
         return ResponseEntity.ok(cartService.getCartOfUser());
     }
+
+    @PutMapping("/carts/products/{productId}/quantity/{operation}")
+    public ResponseEntity<CartDto> updateProductQuantityInCart(@PathVariable Long productId, @PathVariable String operation) {
+        return ResponseEntity.ok(cartService.updateProductQuantityInCart(productId, operation.equalsIgnoreCase("add") ? 1 : -1));
+    }
+
+    @DeleteMapping("/carts/{cartId}/products/{productId}")
+    public ResponseEntity<String> removeProductFromCart(@PathVariable Long cartId, @PathVariable Long productId) {
+        cartService.removeProductFromCart(cartId, productId);
+        return ResponseEntity.ok("Product removed from cart successfully");
+    }
 }

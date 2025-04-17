@@ -1,5 +1,6 @@
 package org.application.ecomappbe.service;
 
+import jakarta.transaction.Transactional;
 import org.application.ecomappbe.dto.CartDto;
 import org.application.ecomappbe.dto.ProductDto;
 import org.application.ecomappbe.exception.APIException;
@@ -109,6 +110,83 @@ public class CartServiceImpl implements CartService {
         }
 
         return buildCartDtoWithProducts(findCartByEmailAndId);
+    }
+
+    @Transactional
+    @Override
+    public CartDto updateProductQuantityInCart(Long productId, int quantity) {
+        String email = authUtil.loggedInEmail();
+        Cart userCart = cartRepository.findCartByEmail(email);
+        Long cartId = userCart.getCartId();
+
+        Cart cart = cartRepository.findById(cartId).orElseThrow(
+                () -> new ResourceNotFoundException("Cart not found with ID: " + cartId)
+        );
+
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product not found with ID: " + productId)
+        );
+
+        CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(productId, cartId).orElseThrow(
+                () -> new ResourceNotFoundException("Cart item not found with product ID: " + productId + " and cart ID: " + cartId)
+        );
+
+        if (quantity == 1) {    // ADD Product to Cart
+            if (product.getQuantity() == 0) {
+                throw new APIException(product.getProductName() + " is out of stock");
+            }
+
+            if (product.getQuantity() < quantity) {
+                throw new APIException("Please make an order of the " + product.getProductName() + " less than or equal to " + product.getQuantity());
+            }
+
+            product.setQuantity(product.getQuantity() - 1);
+            cartItem.setQuantity(cartItem.getQuantity() + 1);
+        } else {    // REMOVE Product from Cart
+            if (cartItem.getQuantity() < 1) {
+                throw new APIException("Cannot remove more items than exist in cart");
+            }
+
+            product.setQuantity(product.getQuantity() + 1);
+            cartItem.setQuantity(cartItem.getQuantity() - 1);
+        }
+
+        productRepository.save(product);
+
+        cartItem.setProductPrice(product.getSpecialPrice());
+        cartItem.setDiscount(product.getDiscount());
+        CartItem updatedCartItem = cartItemRepository.save(cartItem);
+
+        if (updatedCartItem.getQuantity() == 0) {
+            cartItemRepository.delete(cartItem);
+            cart.getCartItems().remove(cartItem);
+        }
+
+        cart.setTotalPrice(cart.getTotalPrice() + (product.getSpecialPrice() * quantity));
+        cartRepository.save(cart);
+
+        return buildCartDtoWithProducts(cart);
+    }
+
+    @Override
+    public void removeProductFromCart(Long cartId, Long productId) {
+        Cart cart = cartRepository.findById(cartId).orElseThrow(
+                () -> new ResourceNotFoundException("Cart not found with ID: " + cartId)
+        );
+
+        CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(productId, cartId).orElseThrow(
+                () -> new ResourceNotFoundException("Cart item not found with product ID: " + productId + " and cart ID: " + cartId)
+        );
+
+        Product product = cartItem.getProduct();
+        product.setQuantity(product.getQuantity() + cartItem.getQuantity());
+        productRepository.save(product);
+
+        cart.getCartItems().remove(cartItem);
+        cart.setTotalPrice(cart.getTotalPrice() - (cartItem.getProductPrice() * cartItem.getQuantity()));
+        cartRepository.save(cart);
+
+        cartItemRepository.deleteCartItemByProductIdAndCartId(productId, cartId);
     }
 
     // Helper Methods
