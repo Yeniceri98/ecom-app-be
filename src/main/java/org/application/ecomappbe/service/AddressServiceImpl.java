@@ -10,7 +10,6 @@ import org.application.ecomappbe.model.Address;
 import org.application.ecomappbe.model.User;
 import org.application.ecomappbe.repository.AddressRepository;
 import org.application.ecomappbe.util.AuthUtil;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
