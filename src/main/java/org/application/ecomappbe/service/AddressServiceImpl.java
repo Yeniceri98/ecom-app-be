@@ -65,8 +65,8 @@ public class AddressServiceImpl implements AddressService {
         );
 
         User currentUser = authUtil.loggedInUser();
-        if (!address.getUser().getUserId().equals(currentUser.getUserId())) {
-            throw new ResourceAccessDeniedException("You can only update your own addresses!");
+        if (!address.getUser().getUserId().equals(currentUser.getUserId()) && !authUtil.hasAdminRole()) {
+            throw new ResourceAccessDeniedException("You can only update your own addresses unless you are not an Admin");
         }
 
         address.setStreetName(addressDto.getStreetName());
@@ -87,8 +87,8 @@ public class AddressServiceImpl implements AddressService {
         );
 
         User currentUser = authUtil.loggedInUser();
-        if (!address.getUser().getUserId().equals(currentUser.getUserId())) {
-            throw new ResourceAccessDeniedException("You can only delete your own addresses!");
+        if (!address.getUser().getUserId().equals(currentUser.getUserId()) && !authUtil.hasAdminRole()) {
+            throw new ResourceAccessDeniedException("You can only delete your own addresses unless you are not an Admin");
         }
 
         addressRepository.delete(address);
