@@ -13,7 +13,7 @@ import org.application.ecomappbe.util.AuthUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -82,8 +82,10 @@ public class OrderServiceImpl implements OrderService {
 
         orderItemRepository.saveAll(orderItems);
 
-        // TODO: This should be fixed
-        cart.getCartItems().forEach(item -> {
+        // Create a copy of cart items to avoid ConcurrentModificationException
+        List<CartItem> cartItemsCopy = new ArrayList<>(cart.getCartItems());
+
+        cartItemsCopy.forEach(item -> {
             int quantity = item.getQuantity();
             Product product = item.getProduct();
 
@@ -98,7 +100,6 @@ public class OrderServiceImpl implements OrderService {
         OrderDto orderDto = orderMapper.mapToDto(savedOrder);
         orderItems.forEach(item -> orderDto.getOrderItemsDto().add(orderItemMapper.mapToDto(item)));
         orderDto.setAddressId(orderRequestDto.getAddressId());
-
         return orderDto;
     }
 }
