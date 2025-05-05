@@ -3,10 +3,13 @@ package org.application.ecomappbe.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.application.ecomappbe.dto.OrderDto;
+import org.application.ecomappbe.dto.OrderItemDto;
 import org.application.ecomappbe.dto.OrderRequestDto;
 import org.application.ecomappbe.exception.ResourceNotFoundException;
 import org.application.ecomappbe.mapper.OrderItemMapper;
 import org.application.ecomappbe.mapper.OrderMapper;
+import org.application.ecomappbe.mapper.PaymentMapper;
+import org.application.ecomappbe.mapper.ProductMapper;
 import org.application.ecomappbe.model.*;
 import org.application.ecomappbe.repository.*;
 import org.application.ecomappbe.util.AuthUtil;
@@ -23,11 +26,13 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
+    private final PaymentRepository paymentRepository;
     private final CartService cartService;
     private final AuthUtil authUtil;
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
-    private final PaymentRepository paymentRepository;
+    private final PaymentMapper paymentMapper;
+    private final ProductMapper productMapper;
 
     @Override
     @Transactional
@@ -98,8 +103,18 @@ public class OrderServiceImpl implements OrderService {
         });
 
         OrderDto orderDto = orderMapper.mapToDto(savedOrder);
-        orderItems.forEach(item -> orderDto.getOrderItemsDto().add(orderItemMapper.mapToDto(item)));
+
+        orderItems.forEach(item -> {
+            OrderItemDto itemDto = orderItemMapper.mapToDto(item);
+            if (item.getProduct() != null) {
+                itemDto.setProductDto(productMapper.mapToDto(item.getProduct()));
+            }
+            orderDto.getOrderItemsDto().add(itemDto);
+        });
+
         orderDto.setAddressId(orderRequestDto.getAddressId());
+        orderDto.setPaymentDto(paymentMapper.mapToDto(payment));
+
         return orderDto;
     }
 }
