@@ -40,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
         String email = authUtil.loggedInEmail();
 
         Cart cart = cartRepository.findCartByEmail(email);
+
         if (cart == null) {
             throw new ResourceNotFoundException("Cart not found for email: " + email);
         }
@@ -69,6 +70,7 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         List<CartItem> cartItems = cart.getCartItems();
+
         if (cartItems.isEmpty()) {
             throw new ResourceNotFoundException("Cart is empty");
         }
@@ -104,12 +106,18 @@ public class OrderServiceImpl implements OrderService {
 
         OrderDto orderDto = orderMapper.mapToDto(savedOrder);
 
+        if (orderDto.getOrderItemsDto() == null) {
+            orderDto.setOrderItemsDto(new ArrayList<>());
+        }
+
         orderItems.forEach(item -> {
-            OrderItemDto itemDto = orderItemMapper.mapToDto(item);
-            if (item.getProduct() != null) {
-                itemDto.setProductDto(productMapper.mapToDto(item.getProduct()));
+            if (item != null) {
+                OrderItemDto itemDto = orderItemMapper.mapToDto(item);
+                if (item.getProduct() != null) {
+                    itemDto.setProductDto(productMapper.mapToDto(item.getProduct()));
+                }
+                orderDto.getOrderItemsDto().add(itemDto);
             }
-            orderDto.getOrderItemsDto().add(itemDto);
         });
 
         orderDto.setAddressId(orderRequestDto.getAddressId());
