@@ -15,11 +15,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
     private final AuthUtil authUtil;
+
+    public AddressServiceImpl(AddressRepository addressRepository, AddressMapper addressMapper, AuthUtil authUtil) {
+        this.addressRepository = addressRepository;
+        this.addressMapper = addressMapper;
+        this.authUtil = authUtil;
+    }
 
     @Override
     public AddressDto createAddress(AddressDto addressDto) {

@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
@@ -33,6 +32,21 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemMapper orderItemMapper;
     private final PaymentMapper paymentMapper;
     private final ProductMapper productMapper;
+
+    public OrderServiceImpl(OrderRepository orderRepository, OrderItemRepository orderItemRepository, CartRepository cartRepository, AddressRepository addressRepository, ProductRepository productRepository, PaymentRepository paymentRepository, CartService cartService, AuthUtil authUtil, OrderMapper orderMapper, OrderItemMapper orderItemMapper, PaymentMapper paymentMapper, ProductMapper productMapper) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.cartRepository = cartRepository;
+        this.addressRepository = addressRepository;
+        this.productRepository = productRepository;
+        this.paymentRepository = paymentRepository;
+        this.cartService = cartService;
+        this.authUtil = authUtil;
+        this.orderMapper = orderMapper;
+        this.orderItemMapper = orderItemMapper;
+        this.paymentMapper = paymentMapper;
+        this.productMapper = productMapper;
+    }
 
     @Override
     @Transactional
