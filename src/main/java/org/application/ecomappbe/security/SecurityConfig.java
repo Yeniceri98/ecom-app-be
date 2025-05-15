@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/",
                                 "/api/auth/**",
                                 "/api/admin/**",
                                 "/h2-console/**",
