@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.application</groupId>
     <artifactId>ecom-app-be</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>ecom-app-be</name>
     <description>ecom-app-be</description>
     <url/>
@@ -109,6 +109,11 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.4.4</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
