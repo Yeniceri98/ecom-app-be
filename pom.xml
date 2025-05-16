@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.application</groupId>
     <artifactId>ecom-app-be</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <name>ecom-app-be</name>
     <description>ecom-app-be</description>
     <url/>
