@@ -33,6 +33,9 @@ public class ProductServiceImpl implements ProductService {
     @Value("${project.image}")
     private String path;
 
+    @Value("${image.base.url}")
+    private String imageBaseUrl;
+
     public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
@@ -174,9 +177,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     // Helper Methods
+    private String constructImageUrl(String imageName) {
+        return imageBaseUrl.endsWith("/") ? imageBaseUrl + imageName : imageBaseUrl + "/" + imageName;
+    }
+
     private ProductResponse getProductResponse(Page<Product> productPage) {
         List<Product> products = productPage.getContent();
         List<ProductDto> productDtos = productMapper.mapToDtoList(products);
+
+        for (ProductDto dto : productDtos) {
+            dto.setImage(constructImageUrl(dto.getImage()));
+        }
 
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDtos);
