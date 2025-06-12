@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 public class CategoryDto {
     private Long categoryId;
 
-    @Size(min = 3, message = "Category Name field should have at least 3 characters")
+    @Size(min = 2, message = "Category Name field should have at least 2 characters")
     private String categoryName;
 }
