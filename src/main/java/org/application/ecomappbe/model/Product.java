@@ -20,7 +20,10 @@ public class Product {
 
     private String productName;
     private String image;
+
+    @Column(length = 1000)
     private String description;
+
     private Integer quantity;
     private Double price;
     private Double discount;
