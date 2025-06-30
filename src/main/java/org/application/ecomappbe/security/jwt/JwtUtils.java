@@ -84,7 +84,7 @@ public class JwtUtils {
         return ResponseCookie.from(jwtCookie, jwt)
                 .path("/api")       // Cookie will send the URLs that only start with "/api"
                 .maxAge(24 * 60 * 60)
-                .httpOnly(true)     // XSS Protection (If set true, JavaScript cannot access the cookie)
+                .httpOnly(false)    // XSS Protection (If set true, JavaScript cannot access the cookie)
                 .sameSite("Lax")    // CSRF Protection
                 .secure(false)      // NOTE: It has to be "true" in production
                 .build();
