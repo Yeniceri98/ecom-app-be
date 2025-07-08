@@ -2,6 +2,7 @@ package org.application.ecomappbe.service;
 
 import jakarta.transaction.Transactional;
 import org.application.ecomappbe.dto.CartDto;
+import org.application.ecomappbe.dto.CartItemDto;
 import org.application.ecomappbe.dto.ProductDto;
 import org.application.ecomappbe.exception.APIException;
 import org.application.ecomappbe.exception.ResourceNotFoundException;
@@ -78,6 +79,44 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(cart);
 
         return buildCartDtoWithProducts(cart);
+    }
+
+    @Override
+    public String createOrUpdateCartWithItems(List<CartItemDto> cartItemDtos) {
+        Cart cart = createCart();
+
+        if (!cart.getCartItems().isEmpty()) {
+            cartItemRepository.deleteAllByCartId(cart.getCartId());
+        }
+
+        double totalPrice = 0.00;
+
+        // Process each item in the request to add to the Cart
+        for (CartItemDto cartItemDto : cartItemDtos) {
+            Long productId = cartItemDto.getProductId();
+            Integer quantity = cartItemDto.getQuantity();
+
+            Product product = productRepository.findById(productId).orElseThrow(
+                    () -> new ResourceNotFoundException("Product with ID " + productId + " is not found")
+            );
+
+            // product.setQuantity(product.getQuantity() - quantity);
+            totalPrice += product.getSpecialPrice() * quantity;
+
+            // Create & Save Cart Item
+            CartItem cartItem = new CartItem();
+            cartItem.setCart(cart);
+            cartItem.setProduct(product);
+            cartItem.setQuantity(quantity);
+            cartItem.setProductPrice(product.getSpecialPrice());
+            cartItem.setDiscount(product.getDiscount());
+            cartItemRepository.save(cartItem);
+        }
+
+        cart.setTotalPrice(totalPrice);
+        cartRepository.save(cart);
+
+        return "Cart created / updated with the items successfully";
     }
 
     @Override

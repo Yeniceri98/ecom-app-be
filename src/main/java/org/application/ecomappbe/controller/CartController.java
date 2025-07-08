@@ -1,6 +1,7 @@
 package org.application.ecomappbe.controller;
 
 import org.application.ecomappbe.dto.CartDto;
+import org.application.ecomappbe.dto.CartItemDto;
 import org.application.ecomappbe.service.CartService;
 import org.application.ecomappbe.util.AuthUtil;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,11 @@ public class CartController {
     @PostMapping("/carts/products/{productId}/quantity/{quantity}")
     public ResponseEntity<CartDto> addProductToCart(@PathVariable Long productId, @PathVariable Integer quantity) {
         return ResponseEntity.ok(cartService.addProductToCart(productId, quantity));
+    }
+
+    @PostMapping("/carts/create")
+    public ResponseEntity<String> createOrUpdateCartWithItems(@RequestBody List<CartItemDto> cartItemDtos) {
+        return ResponseEntity.ok(cartService.createOrUpdateCartWithItems(cartItemDtos));
     }
 
     @GetMapping("/carts")
