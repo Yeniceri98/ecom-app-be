@@ -54,7 +54,7 @@ public class CartServiceImpl implements CartService {
             throw new APIException("Please make an order of the " + product.getProductName() + " less than or equal to " + product.getQuantity());
         }
 
-        CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(cart.getCartId(), product.getProductId()).orElse(null);
+        CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(cart.getCartId(), productId).orElse(null);
 
         if (cartItem == null) {
             CartItem newCartItem = new CartItem();
@@ -81,6 +81,7 @@ public class CartServiceImpl implements CartService {
         return buildCartDtoWithProducts(cart);
     }
 
+    @Transactional
     @Override
     public String createOrUpdateCartWithItems(List<CartItemDto> cartItemDtos) {
         Cart cart = createCart();
@@ -207,6 +208,7 @@ public class CartServiceImpl implements CartService {
         return buildCartDtoWithProducts(cart);
     }
 
+    @Transactional
     @Override
     public void removeProductFromCart(Long cartId, Long productId) {
         Cart cart = cartRepository.findById(cartId).orElseThrow(
