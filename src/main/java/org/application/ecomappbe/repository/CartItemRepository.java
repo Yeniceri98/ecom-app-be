@@ -1,5 +1,6 @@
 package org.application.ecomappbe.repository;
 
+import org.application.ecomappbe.model.Cart;
 import org.application.ecomappbe.model.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     @Query("SELECT ci FROM CartItem ci WHERE ci.cart.cartId = :cartId AND ci.product.productId = :productId")
     void deleteCartItemByProductIdAndCartId(Long cartId, Long productId);
+
+    @Query("DELETE FROM CartItem ci WHERE ci.cart.cartId = :cartId")
+    Cart deleteAllByCartId(Long cartId);
 }
